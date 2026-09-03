@@ -4,7 +4,7 @@
 
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
-  description = "Security group for ALB"
+  description = "Security group for RIMO ALB"
   vpc_id      = aws_vpc.rimo.id
 
   tags = {
@@ -12,6 +12,8 @@ resource "aws_security_group" "alb" {
   }
 }
 
+
+# Internet -> ALB HTTP
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {
   security_group_id = aws_security_group.alb.id
 
@@ -23,6 +25,8 @@ resource "aws_vpc_security_group_ingress_rule" "alb_http" {
   description = "HTTP from Internet"
 }
 
+
+# Internet -> ALB HTTPS
 resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   security_group_id = aws_security_group.alb.id
 
@@ -34,13 +38,15 @@ resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   description = "HTTPS from Internet"
 }
 
+
+# ALB outbound
 resource "aws_vpc_security_group_egress_rule" "alb_all_outbound" {
   security_group_id = aws_security_group.alb.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 
-  description = "Allow outbound traffic"
+  description = "Allow ALB outbound traffic"
 }
 
 
@@ -58,7 +64,8 @@ resource "aws_security_group" "eks_node" {
   }
 }
 
-# Worker Node / Pod 간 내부 통신
+
+# Worker Node 간 내부 통신
 resource "aws_vpc_security_group_ingress_rule" "eks_node_internal" {
   security_group_id = aws_security_group.eks_node.id
 
@@ -68,30 +75,48 @@ resource "aws_vpc_security_group_ingress_rule" "eks_node_internal" {
   description = "Allow communication between EKS worker nodes"
 }
 
-# ALB -> Pod backend
-# target-type ip 사용 시 NodePort 범위 대신 실제 backend port 허용
+
+# =========================================================
+# ALB -> Backend Pods
+#
+# Backend Ports
+# auth-api      : 8080
+# data-api      : 8081
+# member-api    : 8082
+# route-api     : 8083
+# tracking-api  : 8084
+# =========================================================
+
 resource "aws_vpc_security_group_ingress_rule" "eks_node_from_alb" {
   security_group_id = aws_security_group.eks_node.id
 
   referenced_security_group_id = aws_security_group.alb.id
 
   from_port   = 8080
-  to_port     = 8080
+  to_port     = 8084
   ip_protocol = "tcp"
 
-  description = "Allow ALB to backend Pods"
+  description = "Allow ALB to RIMO backend Pods"
 }
 
+
+# =========================================================
 # Monitoring EC2 -> EKS
+# Prometheus / Jenkins / kubectl
+# =========================================================
+
 resource "aws_vpc_security_group_ingress_rule" "eks_node_from_monitoring" {
   security_group_id = aws_security_group.eks_node.id
 
   referenced_security_group_id = aws_security_group.monitoring.id
-  ip_protocol                  = "-1"
+
+  ip_protocol = "-1"
 
   description = "Allow monitoring server to EKS nodes"
 }
 
+
+# EKS outbound
 resource "aws_vpc_security_group_egress_rule" "eks_node_all_outbound" {
   security_group_id = aws_security_group.eks_node.id
 
@@ -116,6 +141,8 @@ resource "aws_security_group" "redis" {
   }
 }
 
+
+# EKS -> Redis 6379
 resource "aws_vpc_security_group_ingress_rule" "redis_from_eks" {
   security_group_id = aws_security_group.redis.id
 
@@ -143,6 +170,8 @@ resource "aws_security_group" "monitoring" {
   }
 }
 
+
+# Monitoring EC2 outbound
 resource "aws_vpc_security_group_egress_rule" "monitoring_all_outbound" {
   security_group_id = aws_security_group.monitoring.id
 

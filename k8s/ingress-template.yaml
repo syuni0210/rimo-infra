@@ -9,13 +9,16 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
 
-    # Terraform에서 만든 ALB Security Group
+    # Terraform에서 생성한 ALB Security Group
     alb.ingress.kubernetes.io/security-groups: ALB_SECURITY_GROUP_ID
 
+    # HTTP / HTTPS
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+
+    # HTTP -> HTTPS
     alb.ingress.kubernetes.io/ssl-redirect: '443'
 
-    # Terraform apply 후 실제 ARN으로 교체
+    # Terraform apply 후 실제 ARN으로 변경
     alb.ingress.kubernetes.io/certificate-arn: ACM_CERTIFICATE_ARN
     alb.ingress.kubernetes.io/wafv2-acl-arn: WAF_WEB_ACL_ARN
 
@@ -27,7 +30,11 @@ spec:
       http:
         paths:
 
-          - path: /auth
+          # =================================================
+          # AUTH API
+          # =================================================
+
+          - path: /api/v1/auth
             pathType: Prefix
             backend:
               service:
@@ -35,7 +42,25 @@ spec:
                 port:
                   number: 80
 
-          - path: /member
+
+          # =================================================
+          # DATA API
+          # =================================================
+
+          - path: /api/report
+            pathType: Prefix
+            backend:
+              service:
+                name: data-api
+                port:
+                  number: 80
+
+
+          # =================================================
+          # MEMBER API
+          # =================================================
+
+          - path: /api/users
             pathType: Prefix
             backend:
               service:
@@ -43,15 +68,36 @@ spec:
                 port:
                   number: 80
 
-          - path: /tracking
+          - path: /api/friends
             pathType: Prefix
             backend:
               service:
-                name: tracking-api
+                name: member-api
                 port:
                   number: 80
 
-          - path: /route
+          - path: /api/member
+            pathType: Prefix
+            backend:
+              service:
+                name: member-api
+                port:
+                  number: 80
+
+          - path: /api/guardians
+            pathType: Prefix
+            backend:
+              service:
+                name: member-api
+                port:
+                  number: 80
+
+
+          # =================================================
+          # ROUTE API
+          # =================================================
+
+          - path: /api/route
             pathType: Prefix
             backend:
               service:
@@ -59,10 +105,23 @@ spec:
                 port:
                   number: 80
 
-          - path: /data
+          - path: /api/routes
             pathType: Prefix
             backend:
               service:
-                name: data-api
+                name: route-api
+                port:
+                  number: 80
+
+
+          # =================================================
+          # TRACKING API
+          # =================================================
+
+          - path: /api/tracking
+            pathType: Prefix
+            backend:
+              service:
+                name: tracking-api
                 port:
                   number: 80
