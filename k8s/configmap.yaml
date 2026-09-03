@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rimo-config
+  namespace: default
+
+data:
+  DB_HOST: "211.46.52.166"
+  DB_PORT: "13306"
+
+  REDIS_HOST: "REDIS_ENDPOINT"
+  REDIS_PORT: "6379"
+
+  SPRING_PROFILES_ACTIVE: "prod"
