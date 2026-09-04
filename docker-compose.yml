@@ -1,0 +1,115 @@
+services:
+  auth-server:
+    build:
+      context: ./auth
+    container_name: auth-server
+    environment:
+      - SERVER_PORT=8080
+      - DB_URL=jdbc:mariadb://211.46.52.166:13306/team4
+      - DB_USERNAME=team4
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1
+    networks:
+      - rimo-network
+    depends_on:
+      - redis
+
+  member-api-server:
+    build:
+      context: ./member-api
+    container_name: member-api-server
+    environment:
+      - SERVER_PORT=8081
+      - DB_URL=jdbc:mariadb://211.46.52.166:13306/team4
+      - DB_USERNAME=team4
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1
+    networks:
+      - rimo-network
+
+  tracking-api-server:
+    build:
+      context: ./tracking-api
+    container_name: tracking-api-server
+    environment:
+      - SERVER_PORT=8082
+      - DB_URL=jdbc:mariadb://211.46.52.166:13306/team4
+      - DB_USERNAME=team4
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SOLAPI_API_KEY=${SOLAPI_API_KEY}
+      - SOLAPI_API_SECRET=${SOLAPI_API_SECRET}
+      - SOLAPI_SENDER=${SOLAPI_SENDER}
+      - KAKAO_REST_API_KEY=${KAKAO_REST_API_KEY}
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1
+    networks:
+      - rimo-network
+    depends_on:
+      - redis
+
+  route-api-server:
+    build:
+      context: ./route-api
+    container_name: route-api-server
+    env_file:
+      - ./route-api/.env
+    environment:
+      - SERVER_PORT=8083
+      - DB_URL=jdbc:mariadb://211.46.52.166:13306/team4
+      - DB_USERNAME=team4
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DATA_API_BASE_URL=http://data-api-server:8084
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1
+    networks:
+      - rimo-network
+    depends_on:
+      - data-api-server
+
+  data-api-server:
+    build:
+      context: ./data-api
+    container_name: data-api-server
+    environment:
+      - SERVER_PORT=8084
+      - DB_URL=jdbc:mariadb://211.46.52.166:13306/team4
+      - DB_USERNAME=team4
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
+      - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1
+    networks:
+      - rimo-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: rimo-redis
+    restart: unless-stopped
+    networks:
+      - rimo-network
+
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - rimo-network
+    depends_on:
+      - auth-server
+      - member-api-server
+      - tracking-api-server
+      - route-api-server
+      - data-api-server
+
+networks:
+  rimo-network:
+    driver: bridge

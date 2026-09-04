@@ -67,3 +67,60 @@ output "alb_security_group_id" {
   description = "Security Group ID for RIMO ALB"
   value       = aws_security_group.alb.id
 }
+
+# =========================================================
+# Redis
+# =========================================================
+
+output "redis_endpoint" {
+  description = "ElastiCache Redis endpoint"
+  value       = aws_elasticache_cluster.redis.cache_nodes[0].address
+}
+
+
+# =========================================================
+# AWS Load Balancer Controller IAM Role
+# =========================================================
+
+output "aws_load_balancer_controller_role_arn" {
+  description = "IAM role ARN for AWS Load Balancer Controller"
+  value       = aws_iam_role.aws_load_balancer_controller.arn
+}
+
+
+# =========================================================
+# ECR Repository URLs
+# =========================================================
+
+output "auth_api_ecr_url" {
+  value = aws_ecr_repository.auth_api.repository_url
+}
+
+output "data_api_ecr_url" {
+  value = aws_ecr_repository.data_api.repository_url
+}
+
+output "member_api_ecr_url" {
+  value = aws_ecr_repository.member_api.repository_url
+}
+
+output "route_api_ecr_url" {
+  value = aws_ecr_repository.route_api.repository_url
+}
+
+output "tracking_api_ecr_url" {
+  value = aws_ecr_repository.tracking_api.repository_url
+}
+
+
+# =========================================================
+# EKS
+# =========================================================
+
+output "eks_cluster_name" {
+  value = aws_eks_cluster.rimo.name
+}
+
+output "eks_cluster_endpoint" {
+  value = aws_eks_cluster.rimo.endpoint
+}

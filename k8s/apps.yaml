@@ -1,8 +1,6 @@
 # =========================================================
-# AUTH API
-# 실제 애플리케이션 포트: 8080
+# AUTH API - 8080
 # =========================================================
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,6 +44,10 @@ spec:
             - secretRef:
                 name: rimo-secret
 
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+
           ports:
             - containerPort: 8080
 
@@ -65,10 +67,8 @@ metadata:
   namespace: default
 spec:
   type: ClusterIP
-
   selector:
     app: auth-api
-
   ports:
     - port: 80
       targetPort: 8080
@@ -76,87 +76,8 @@ spec:
 
 ---
 # =========================================================
-# DATA API
-# 실제 애플리케이션 포트: 8081
+# MEMBER API - 8081
 # =========================================================
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: data-api
-  namespace: default
-spec:
-  replicas: 2
-
-  selector:
-    matchLabels:
-      app: data-api
-
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
-
-  template:
-    metadata:
-      labels:
-        app: data-api
-
-    spec:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: data-api
-
-      containers:
-        - name: data-api
-          image: DATA_API_IMAGE
-          imagePullPolicy: Always
-
-          envFrom:
-            - configMapRef:
-                name: rimo-config
-            - secretRef:
-                name: rimo-secret
-
-          ports:
-            - containerPort: 8081
-
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: data-api
-  namespace: default
-spec:
-  type: ClusterIP
-
-  selector:
-    app: data-api
-
-  ports:
-    - port: 80
-      targetPort: 8081
-
-
----
-# =========================================================
-# MEMBER API
-# 실제 애플리케이션 포트: 8082
-# =========================================================
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -200,8 +121,12 @@ spec:
             - secretRef:
                 name: rimo-secret
 
+          env:
+            - name: SERVER_PORT
+              value: "8081"
+
           ports:
-            - containerPort: 8082
+            - containerPort: 8081
 
           resources:
             requests:
@@ -219,98 +144,17 @@ metadata:
   namespace: default
 spec:
   type: ClusterIP
-
   selector:
     app: member-api
-
   ports:
     - port: 80
-      targetPort: 8082
+      targetPort: 8081
 
 
 ---
 # =========================================================
-# ROUTE API
-# 실제 애플리케이션 포트: 8083
+# TRACKING API - 8082
 # =========================================================
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: route-api
-  namespace: default
-spec:
-  replicas: 2
-
-  selector:
-    matchLabels:
-      app: route-api
-
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
-
-  template:
-    metadata:
-      labels:
-        app: route-api
-
-    spec:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: route-api
-
-      containers:
-        - name: route-api
-          image: ROUTE_API_IMAGE
-          imagePullPolicy: Always
-
-          envFrom:
-            - configMapRef:
-                name: rimo-config
-            - secretRef:
-                name: rimo-secret
-
-          ports:
-            - containerPort: 8083
-
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: route-api
-  namespace: default
-spec:
-  type: ClusterIP
-
-  selector:
-    app: route-api
-
-  ports:
-    - port: 80
-      targetPort: 8083
-
-
----
-# =========================================================
-# TRACKING API
-# 실제 애플리케이션 포트: 8084
-# =========================================================
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -354,8 +198,12 @@ spec:
             - secretRef:
                 name: rimo-secret
 
+          env:
+            - name: SERVER_PORT
+              value: "8082"
+
           ports:
-            - containerPort: 8084
+            - containerPort: 8082
 
           resources:
             requests:
@@ -373,10 +221,162 @@ metadata:
   namespace: default
 spec:
   type: ClusterIP
-
   selector:
     app: tracking-api
+  ports:
+    - port: 80
+      targetPort: 8082
 
+
+---
+# =========================================================
+# ROUTE API - 8083
+# =========================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: route-api
+  namespace: default
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: route-api
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  template:
+    metadata:
+      labels:
+        app: route-api
+
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: route-api
+
+      containers:
+        - name: route-api
+          image: ROUTE_API_IMAGE
+          imagePullPolicy: Always
+
+          envFrom:
+            - configMapRef:
+                name: rimo-config
+            - secretRef:
+                name: rimo-secret
+
+          env:
+            - name: SERVER_PORT
+              value: "8083"
+
+          ports:
+            - containerPort: 8083
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: route-api
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: route-api
+  ports:
+    - port: 80
+      targetPort: 8083
+
+
+---
+# =========================================================
+# DATA API - 8084
+# =========================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-api
+  namespace: default
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: data-api
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  template:
+    metadata:
+      labels:
+        app: data-api
+
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: data-api
+
+      containers:
+        - name: data-api
+          image: DATA_API_IMAGE
+          imagePullPolicy: Always
+
+          envFrom:
+            - configMapRef:
+                name: rimo-config
+            - secretRef:
+                name: rimo-secret
+
+          env:
+            - name: SERVER_PORT
+              value: "8084"
+
+          ports:
+            - containerPort: 8084
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-api
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: data-api
   ports:
     - port: 80
       targetPort: 8084

@@ -5,10 +5,11 @@ metadata:
   namespace: default
 
 data:
-  DB_HOST: "211.46.52.166"
-  DB_PORT: "13306"
+  DB_URL: "jdbc:mariadb://211.46.52.166:13306/team4"
 
   REDIS_HOST: "REDIS_ENDPOINT"
   REDIS_PORT: "6379"
+
+  DATA_API_BASE_URL: "http://data-api:80"
 
   SPRING_PROFILES_ACTIVE: "prod"
