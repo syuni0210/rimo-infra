@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-local
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-local
+  template:
+    metadata:
+      labels:
+        app: redis-local
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-local
+  namespace: default
+spec:
+  selector:
+    app: redis-local
+  ports:
+    - port: 6379
+      targetPort: 6379
