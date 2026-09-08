@@ -124,3 +124,12 @@ output "eks_cluster_name" {
 output "eks_cluster_endpoint" {
   value = aws_eks_cluster.rimo.endpoint
 }
+
+# =========================================================
+# Route 53
+# =========================================================
+
+output "route53_zone_id" {
+  description = "Route 53 Hosted Zone ID for RIMO"
+  value       = data.aws_route53_zone.rimo.zone_id
+}

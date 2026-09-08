@@ -9,3 +9,4 @@ crash.*.log
 
 # Kubernetes Secrets
 k8s/secret.yaml
+kubectl

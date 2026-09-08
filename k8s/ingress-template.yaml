@@ -9,6 +9,12 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
 
+    # ALB Target Health Check
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/success-codes: '200'
+
     # Terraform에서 생성한 ALB Security Group
     alb.ingress.kubernetes.io/security-groups: ALB_SECURITY_GROUP_ID
 
