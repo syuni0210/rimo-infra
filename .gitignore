@@ -1,0 +1,12 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+*.pem
+*.key
+
+# Kubernetes Secrets
+k8s/secret.yaml
+kubectl
