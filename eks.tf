@@ -30,7 +30,7 @@ resource "aws_eks_cluster" "rimo" {
 
     # 현재 Terraform / kubectl 작업 PC 공인 IP만 허용
     public_access_cidrs = [
-      "118.131.22.85/32"
+      var.admin_cidr
     ]
   }
 

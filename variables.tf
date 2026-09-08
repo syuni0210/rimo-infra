@@ -21,3 +21,8 @@ variable "kubernetes_version" {
   type        = string
   default     = "1.36"
 }
+
+variable "admin_cidr" {
+  description = "Public IP CIDR allowed to access the EKS API server"
+  type        = string
+}

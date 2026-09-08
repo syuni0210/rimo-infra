@@ -73,13 +73,3 @@ resource "aws_acm_certificate_validation" "rimo" {
 
 
 # =========================================================
-# Outputs
-# =========================================================
-
-output "route53_zone_id" {
-  value = data.aws_route53_zone.rimo.zone_id
-}
-
-output "acm_certificate_arn" {
-  value = aws_acm_certificate.rimo.arn
-}

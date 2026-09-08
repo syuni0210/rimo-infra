@@ -81,10 +81,10 @@ resource "aws_vpc_security_group_ingress_rule" "eks_node_internal" {
 #
 # Backend Ports
 # auth-api      : 8080
-# data-api      : 8081
-# member-api    : 8082
+# member-api    : 8081
+# tracking-api  : 8082
 # route-api     : 8083
-# tracking-api  : 8084
+# data-api      : 8084
 # =========================================================
 
 resource "aws_vpc_security_group_ingress_rule" "eks_node_from_alb" {

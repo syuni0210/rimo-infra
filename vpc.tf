@@ -103,18 +103,36 @@ resource "aws_subnet" "private_app_b" {
 
 
 # =========================================================
-# Private Cache Subnet
+# Private Cache Subnet A
 # ElastiCache Redis
+# ap-northeast-2a
 # =========================================================
 
-resource "aws_subnet" "private_cache" {
+resource "aws_subnet" "private_cache_a" {
   vpc_id                  = aws_vpc.rimo.id
   cidr_block              = "10.0.21.0/24"
   availability_zone       = "ap-northeast-2a"
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "${var.project_name}-private-cache"
+    Name = "${var.project_name}-private-cache-a"
+  }
+}
+
+# =========================================================
+# Private Cache Subnet B
+# ElastiCache Redis (이중화용)
+# ap-northeast-2c
+# =========================================================
+
+resource "aws_subnet" "private_cache_b" {
+  vpc_id                  = aws_vpc.rimo.id
+  cidr_block              = "10.0.22.0/24"
+  availability_zone       = "ap-northeast-2c"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "${var.project_name}-private-cache-b"
   }
 }
 
@@ -293,12 +311,17 @@ resource "aws_route_table" "private_cache" {
   }
 }
 
-
-resource "aws_route_table_association" "private_cache" {
-  subnet_id      = aws_subnet.private_cache.id
+# Cache Subnet A 연결
+resource "aws_route_table_association" "private_cache_a" {
+  subnet_id      = aws_subnet.private_cache_a.id
   route_table_id = aws_route_table.private_cache.id
 }
 
+# Cache Subnet B 연결
+resource "aws_route_table_association" "private_cache_b" {
+  subnet_id      = aws_subnet.private_cache_b.id
+  route_table_id = aws_route_table.private_cache.id
+}
 
 # =========================================================
 # Monitoring Route Table
