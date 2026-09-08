@@ -25,7 +25,7 @@ output "private_app_b_id" {
 
 output "private_cache_id" {
   description = "Private Cache Subnet ID"
-  value       = aws_subnet.private_cache.id
+  value       = aws_subnet.private_cache_a.id
 }
 
 output "private_monitoring_id" {
@@ -74,7 +74,7 @@ output "alb_security_group_id" {
 
 output "redis_endpoint" {
   description = "ElastiCache Redis endpoint"
-  value       = aws_elasticache_cluster.redis.cache_nodes[0].address
+  value       = aws_elasticache_replication_group.redis.primary_endpoint_address
 }
 
 
