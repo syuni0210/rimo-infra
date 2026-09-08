@@ -4,3 +4,5 @@ cluster_name       = "rimo-eks"
 kubernetes_version = "1.36"
 alb_dns_name = "CHANGE_ME"
 alb_zone_id  = "CHANGE_ME"
+
+admin_cidr = "118.131.22.85/32"
