@@ -82,7 +82,7 @@ resource "aws_instance" "monitoring" {
     # Docker
     # ======================================================
 
-    apt-get install -y docker.io
+    curl -fsSL https://get.docker.com | sh
 
     systemctl enable docker
     systemctl start docker
