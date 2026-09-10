@@ -37,3 +37,15 @@ resource "aws_route53_record" "api" {
     evaluate_target_health = true
   }
 }
+
+# =========================================================
+# Web Server DNS Record (A Record -> EC2 EIP)
+# =========================================================
+
+resource "aws_route53_record" "web" {
+  zone_id = data.aws_route53_zone.rimo.zone_id
+  name    = "www.rimo-app.com"  # 원하는 서브도메인 또는 루트 도메인("rimo-app.com")으로 수정
+  type    = "A"
+  ttl     = "300"
+  records = [aws_eip.web.public_ip]
+}
