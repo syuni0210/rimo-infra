@@ -9,7 +9,7 @@ data:
   SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
   DB_URL: "jdbc:mariadb://211.46.52.166:13306/team4"
 
-  REDIS_HOST: "REDIS_ENDPOINT"
+  REDIS_HOST: "rimo-redis-group.gzxuah.ng.0001.apn2.cache.amazonaws.com"
   REDIS_PORT: "6379"
 
   DATA_API_BASE_URL: "http://data-api:80"

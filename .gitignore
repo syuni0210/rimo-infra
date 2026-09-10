@@ -11,3 +11,7 @@ crash.*.log
 k8s/secret.yaml
 k8s/local/secret-local.yaml
 kubectl
+
+# Local backup / generated ingress
+*.bak
+k8s/ingress.yaml

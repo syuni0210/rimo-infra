@@ -23,26 +23,34 @@ spec:
     metadata:
       labels:
         app: auth-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
 
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: auth-api
+          matchLabelKeys:
+            - pod-template-hash
 
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: auth-api
+          matchLabelKeys:
+            - pod-template-hash
 
       containers:
         - name: auth-api
-          image: AUTH_API_IMAGE
+          image: 110844250782.dkr.ecr.ap-northeast-2.amazonaws.com/rimo/auth-api:latest
           imagePullPolicy: Always
 
           envFrom:
@@ -125,26 +133,34 @@ spec:
     metadata:
       labels:
         app: member-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8081"
 
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: member-api
+          matchLabelKeys:
+            - pod-template-hash
 
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: member-api
+          matchLabelKeys:
+            - pod-template-hash
 
       containers:
         - name: member-api
-          image: MEMBER_API_IMAGE
+          image: 110844250782.dkr.ecr.ap-northeast-2.amazonaws.com/rimo/member-api:latest
           imagePullPolicy: Always
 
           envFrom:
@@ -227,26 +243,34 @@ spec:
     metadata:
       labels:
         app: tracking-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8082"
 
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: tracking-api
+          matchLabelKeys:
+            - pod-template-hash
 
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: tracking-api
+          matchLabelKeys:
+            - pod-template-hash
 
       containers:
         - name: tracking-api
-          image: TRACKING_API_IMAGE
+          image: 110844250782.dkr.ecr.ap-northeast-2.amazonaws.com/rimo/tracking-api:latest
           imagePullPolicy: Always
 
           envFrom:
@@ -329,26 +353,34 @@ spec:
     metadata:
       labels:
         app: route-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8083"
 
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: route-api
+          matchLabelKeys:
+            - pod-template-hash
 
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: route-api
+          matchLabelKeys:
+            - pod-template-hash
 
       containers:
         - name: route-api
-          image: ROUTE_API_IMAGE
+          image: 110844250782.dkr.ecr.ap-northeast-2.amazonaws.com/rimo/route-api:latest
           imagePullPolicy: Always
 
           envFrom:
@@ -431,26 +463,34 @@ spec:
     metadata:
       labels:
         app: data-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8084"
 
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: data-api
+          matchLabelKeys:
+            - pod-template-hash
 
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: data-api
+          matchLabelKeys:
+            - pod-template-hash
 
       containers:
         - name: data-api
-          image: DATA_API_IMAGE
+          image: 110844250782.dkr.ecr.ap-northeast-2.amazonaws.com/rimo/data-api:latest
           imagePullPolicy: Always
 
           envFrom:
