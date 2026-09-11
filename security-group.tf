@@ -170,6 +170,15 @@ resource "aws_security_group" "monitoring" {
   }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "monitoring_to_eks_node" {
+  security_group_id = aws_security_group.monitoring.id
+
+  referenced_security_group_id = aws_security_group.eks_node.id
+  ip_protocol                  = "-1"
+
+  description = "Allow traffic from EKS nodes back to monitoring"
+}
+
 
 # Monitoring EC2 outbound
 resource "aws_vpc_security_group_egress_rule" "monitoring_all_outbound" {
