@@ -5,7 +5,7 @@
 
 resource "aws_iam_policy" "jenkins_deploy" {
   name        = "${var.project_name}-jenkins-deploy-policy"
-  description = "Allow Jenkins to push images to ECR, deploy to EKS, upload web artifacts to S3, and deploy web via SSM"
+  description = "Allow Jenkins to push images to ECR and deploy to EKS"
 
   policy = jsonencode({
     Version = "2012-10-17"
