@@ -5,7 +5,7 @@
 
 resource "aws_iam_policy" "jenkins_deploy" {
   name        = "${var.project_name}-jenkins-deploy-policy"
-  description = "Allow Jenkins to push images to ECR and deploy to EKS"
+  description = "Allow Jenkins to push images to ECR, deploy to EKS, upload web artifacts to S3, and deploy web via SSM"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -91,6 +91,34 @@ resource "aws_iam_policy" "jenkins_deploy" {
         ]
 
         Resource = "*"
+      },
+
+      # -----------------------------------------------------
+      # Jenkins -> Web Deploy S3 Bucket 조회
+      # -----------------------------------------------------
+      {
+        Effect = "Allow"
+
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+
+        Resource = "arn:aws:s3:::rimo-web-deploy-110844250782"
+      },
+
+      # -----------------------------------------------------
+      # Jenkins -> Web Deploy S3 파일 업로드/삭제
+      # -----------------------------------------------------
+      {
+        Effect = "Allow"
+
+        Action = [
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+
+        Resource = "arn:aws:s3:::rimo-web-deploy-110844250782/*"
       }
     ]
   })
