@@ -60,6 +60,37 @@ resource "aws_iam_policy" "jenkins_deploy" {
         ]
 
         Resource = aws_eks_cluster.rimo.arn
+      },
+
+      # -----------------------------------------------------
+      # Jenkins -> Web EC2 SSM 명령 실행
+      # -----------------------------------------------------
+      {
+        Effect = "Allow"
+
+        Action = [
+          "ssm:SendCommand"
+        ]
+
+        Resource = [
+          "arn:aws:ssm:ap-northeast-2::document/AWS-RunShellScript",
+          "arn:aws:ec2:ap-northeast-2:110844250782:instance/i-0effe371ad87bbf66"
+        ]
+      },
+
+      # -----------------------------------------------------
+      # Jenkins -> SSM 명령 실행 결과 확인
+      # -----------------------------------------------------
+      {
+        Effect = "Allow"
+
+        Action = [
+          "ssm:GetCommandInvocation",
+          "ssm:ListCommands",
+          "ssm:ListCommandInvocations"
+        ]
+
+        Resource = "*"
       }
     ]
   })
