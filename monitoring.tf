@@ -218,6 +218,34 @@ resource "aws_instance" "monitoring" {
         static_configs:
           - targets:
               - "localhost:9090"
+      - job_name: "kubernetes-pods"
+        kubernetes_sd_configs:
+          - role: pod
+            kubeconfig_file: /etc/prometheus/.kube/config
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+
+      - job_name: "redis_exporter"
+        static_configs:
+          - targets:
+              - "localhost:9121"
 
     PROMEOF
 
@@ -267,6 +295,21 @@ resource "aws_instance" "monitoring" {
 
     systemctl enable prometheus
     systemctl start prometheus
+
+    # ======================================================
+    # kubeconfig for Prometheus (EKS 접근용)
+    # ======================================================
+
+    mkdir -p /etc/prometheus/.kube
+
+    aws eks update-kubeconfig \
+      --name rimo-eks \
+      --region ap-northeast-2 \
+      --kubeconfig /etc/prometheus/.kube/config
+
+    chown -R prometheus:prometheus /etc/prometheus/.kube
+
+    systemctl restart prometheus
 
 
     # ======================================================
@@ -320,6 +363,18 @@ resource "aws_instance" "monitoring" {
     GRAFANAEOF
 
     systemctl restart grafana-server
+
+
+    # ======================================================
+    # Redis Exporter
+    # ======================================================
+
+    docker run -d \
+      --name redis_exporter \
+      --restart unless-stopped \
+      -p 9121:9121 \
+      -e REDIS_ADDR="rimo-redis-group.gzxuah.ng.0001.apn2.cache.amazonaws.com:6379" \
+      oliver006/redis_exporter
 
 
     # ======================================================
