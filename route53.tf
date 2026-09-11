@@ -1,29 +1,31 @@
 # =========================================================
-# Route53 DNS Record (Alias to ALB)
+# Route53 DNS Record
 # =========================================================
 
-# ALB 생성 이후 Route53 Alias 레코드를 생성할지 여부
+
+# =========================================================
+# API DNS
+# api.rimo-app.com -> EKS ALB
+# =========================================================
+
 variable "create_api_dns_record" {
   type        = bool
   description = "ALB 생성 후 api.rimo-app.com Route53 Alias 생성 여부"
   default     = false
 }
 
-# Kubernetes Ingress로 생성된 ALB DNS Name
 variable "alb_dns_name" {
   type        = string
   description = "Kubernetes Ingress로 생성된 ALB의 DNS Name"
   default     = ""
 }
 
-# Kubernetes Ingress로 생성된 ALB Hosted Zone ID
 variable "alb_zone_id" {
   type        = string
   description = "Kubernetes Ingress로 생성된 ALB의 Zone ID"
   default     = ""
 }
 
-# ALB 생성 후 2차 Terraform apply 때 생성
 resource "aws_route53_record" "api" {
   count = var.create_api_dns_record ? 1 : 0
 
@@ -38,14 +40,20 @@ resource "aws_route53_record" "api" {
   }
 }
 
+
 # =========================================================
-# Web Server DNS Record (A Record -> EC2 EIP)
+# Web DNS
+# www.rimo-app.com -> Web ALB
 # =========================================================
 
 resource "aws_route53_record" "web" {
   zone_id = data.aws_route53_zone.rimo.zone_id
-  name    = "www.rimo-app.com"  # 원하는 서브도메인 또는 루트 도메인("rimo-app.com")으로 수정
+  name    = "www.rimo-app.com"
   type    = "A"
-  ttl     = "300"
-  records = [aws_eip.web.public_ip]
+
+  alias {
+    name                   = aws_lb.web.dns_name
+    zone_id                = aws_lb.web.zone_id
+    evaluate_target_health = true
+  }
 }

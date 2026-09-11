@@ -15,3 +15,6 @@ kubectl
 # Local backup / generated ingress
 *.bak
 k8s/ingress.yaml
+
+# Terraform plan file
+tfplan
