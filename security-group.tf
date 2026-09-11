@@ -156,6 +156,19 @@ resource "aws_vpc_security_group_ingress_rule" "redis_from_eks" {
 }
 
 
+# Monitoring EC2 -> Redis 6379 (redis_exporter용)
+resource "aws_vpc_security_group_ingress_rule" "redis_from_monitoring" {
+  security_group_id = aws_security_group.redis.id
+
+  referenced_security_group_id = aws_security_group.monitoring.id
+
+  from_port   = 6379
+  to_port     = 6379
+  ip_protocol = "tcp"
+
+  description = "Allow monitoring EC2 to access Redis (for redis_exporter)"
+}
+
 # =========================================================
 # Monitoring Security Group
 # =========================================================
@@ -168,6 +181,15 @@ resource "aws_security_group" "monitoring" {
   tags = {
     Name = "${var.project_name}-monitoring-sg"
   }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "monitoring_to_eks_node" {
+  security_group_id = aws_security_group.monitoring.id
+
+  referenced_security_group_id = aws_security_group.eks_node.id
+  ip_protocol                  = "-1"
+
+  description = "Allow traffic from EKS nodes back to monitoring"
 }
 
 
