@@ -89,7 +89,7 @@ resource "aws_instance" "web" {
   # SSH 대신 Systems Manager 사용
   iam_instance_profile = aws_iam_instance_profile.web.name
 
-  user_data = <<-EOF
+  user_data = <<-EOF2
               #!/bin/bash
 
               dnf install -y nginx unzip
@@ -127,7 +127,12 @@ resource "aws_instance" "web" {
 
               systemctl enable amazon-ssm-agent || true
               systemctl restart amazon-ssm-agent || true
-              EOF
+              EOF2
+
+  # 최신 AMI가 변경되어도 기존 Web EC2는 교체하지 않음
+  lifecycle {
+    ignore_changes = [ami]
+  }
 
   depends_on = [
     aws_iam_role_policy_attachment.web_ssm,
