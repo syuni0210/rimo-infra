@@ -42,3 +42,13 @@ resource "aws_iam_role_policy_attachment" "monitoring_cloudwatch_readonly" {
   role       = aws_iam_role.monitoring_ec2.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess"
 }
+
+# =========================================================
+# Monitoring EC2 - EC2 조회 권한
+# (Node 인스턴스 정보 확인 및 CloudWatch 대시보드 구축용)
+# =========================================================
+
+resource "aws_iam_role_policy_attachment" "monitoring_ec2_readonly" {
+  role       = aws_iam_role.monitoring_ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+}
