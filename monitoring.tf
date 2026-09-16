@@ -389,6 +389,43 @@ resource "aws_instance" "monitoring" {
 
 
     # ======================================================
+    # Promtail (EC2) - Jenkins 빌드 로그 수집
+    # ======================================================
+
+    mkdir -p /etc/promtail-ec2
+
+    cat > /etc/promtail-ec2/config.yaml <<'PROMTAILEOF'
+    server:
+      http_listen_port: 9081
+      grpc_listen_port: 0
+
+    positions:
+      filename: /tmp/positions-ec2.yaml
+
+    clients:
+      - url: http://localhost:3100/loki/api/v1/push
+
+    scrape_configs:
+      - job_name: jenkins-builds
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: jenkins
+              __path__: /var/log/jenkins-jobs/*/builds/*/log
+    PROMTAILEOF
+
+    docker run -d \
+      --name promtail-ec2 \
+      --restart unless-stopped \
+      --network host \
+      -v /etc/promtail-ec2/config.yaml:/etc/promtail/config.yaml:ro \
+      -v /var/lib/jenkins/jobs:/var/log/jenkins-jobs:ro \
+      grafana/promtail:3.0.0 \
+      -config.file=/etc/promtail/config.yaml
+
+
+    # ======================================================
     # Installation Check
     # ======================================================
 
