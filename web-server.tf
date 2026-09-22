@@ -106,6 +106,11 @@ resource "aws_instance" "web" {
               location / {
                   try_files $uri $uri/ /index.html;
               }
+              location = /index.html {
+                  add_header Cache-Control "no-cache, no-store, must-revalidate";
+                  add_header Pragma "no-cache";
+                  add_header Expires "0";
+              }
               NGINX
 
               # 초기 확인용 페이지
